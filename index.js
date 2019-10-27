@@ -11,15 +11,18 @@ const port = 500;
 const socket = io(http);
 
 
+
+const sendRecentUploads = async what =>
+  what.emit('server:recent-uploads', await getRecentUploads());
+
 socket.on('connection', async socket => {
 
-  const sendRecentUploads = async () =>
-    socket.emit('server:recent-uploads', await getRecentUploads());
+  
 
 
   console.log('user connected');
-  await sendRecentUploads();
-  socket.on('client:request-recent-uploads', sendRecentUploads);
+  await sendRecentUploads(socket);
+  socket.on('client:request-recent-uploads', () => sendRecentUploads(socket));
 
 });
 
@@ -42,6 +45,7 @@ app.post('/upload', function(req, res) {
       return res.status(500).send(err);
     }
     res.send('File uploaded!');
+    sendRecentUploads(io);
   });
 });
 
