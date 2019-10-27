@@ -3,15 +3,25 @@ const app = express();
 const http = require('http').Server(app)
 const io = require('socket.io');
 
+const getRecentUploads = require('./get-recent-uploads');
+
 const port = 500;
 
 const socket = io(http);
-socket.on('connection', socket => {
+
+
+socket.on('connection', async socket => {
+
+  const sendRecentUploads = async () =>
+    socket.emit('server:recent-uploads', await getRecentUploads());
+
+
   console.log('user connected');
-  socket.emit('server:welcome', {
-    important: 'I welcome you'
-  });
+  await sendRecentUploads();
+  socket.on('client:request-recent-uploads', sendRecentUploads);
+
 });
+
 
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
@@ -22,7 +32,7 @@ app.post('/upload', function(req, res) {
 
   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
   let audioFile = req.files.audioFile;
-  console.log('got', audioFile)
+  console.log('got', audioFile);
   // Use the mv() method to place the file somewhere on your server
   audioFile.mv(`./uploads/${audioFile.name}`, err => {
     if (err) {
@@ -32,6 +42,8 @@ app.post('/upload', function(req, res) {
     res.send('File uploaded!');
   });
 });
+
+
 
 http.listen(port, () => {
   console.log('connected to port: '+ port)
