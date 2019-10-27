@@ -8,6 +8,9 @@ const port = 500;
 const socket = io(http);
 socket.on('connection', socket => {
   console.log('user connected');
+  socket.emit('server:welcome', {
+    important: 'I welcome you'
+  });
 });
 
 http.listen(port, () => {
