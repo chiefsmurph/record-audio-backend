@@ -24,7 +24,7 @@ app.post('/upload', function(req, res) {
   let audioFile = req.files.audioFile;
   console.log('got', audioFile)
   // Use the mv() method to place the file somewhere on your server
-  audioFile.mv('./uploads', err => {
+  audioFile.mv('uploads', err => {
     if (err) {
       console.error(err);
       return res.status(500).send(err);
