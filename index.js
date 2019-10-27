@@ -22,6 +22,7 @@ socket.on('connection', async socket => {
 
 });
 
+app.use('/audio', express.static('uploads'));
 
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
