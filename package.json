@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
+    "express-fileupload": "^1.1.6-alpha.6",
     "http": "^0.0.0",
     "socket.io": "^2.3.0"
   }
