@@ -13,6 +13,13 @@ const socket = io(http);
 
 
 
+const mongoose = require('mongoose');
+const { mongoConnectionString } = require('../config');
+
+mongoose.connect(mongoConnectionString, { useNewUrlParser: true });
+
+
+
 const sendRecentUploads = async what =>
   what.emit('server:recent-uploads', await getRecentUploads());
 
@@ -32,7 +39,7 @@ socket.on('connection', async socket => {
   socket.on('client:login', async (data, cb) => {
     console.log({ data }, 'login')
     cb(
-      await User.login.call(User, data)
+      await User.login(User)
     )
   });
 

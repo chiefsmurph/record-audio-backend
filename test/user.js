@@ -2,9 +2,9 @@
 const mongoose = require('mongoose');
 const { mongoConnectionString } = require('../config');
 
-const User = require('../models/User');
-
 mongoose.connect(mongoConnectionString, { useNewUrlParser: true });
+
+const User = require('../models/User');
 
 const strlog = what => console.log(JSON.stringify(what, null, 2));
 
