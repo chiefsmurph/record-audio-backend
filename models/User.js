@@ -23,7 +23,7 @@ schema.statics.createAccount = async function({ username, password }) {
   console.log({ hash });
   const authToken = generateToken();
   console.log({ authToken })
-  const doc = await new this({
+  const doc = await this.create({
     username,
     hash,
     authTokens: [authToken]
