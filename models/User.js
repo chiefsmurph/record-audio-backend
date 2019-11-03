@@ -11,6 +11,7 @@ const schema = new Schema({
 });
 
 schema.statics.createAccount = async function({ username, password }) {
+  console.log('creating static', username, password)
   const doc = await this.create({
     username,
     hash: await bcrypt.hash(password, 10),

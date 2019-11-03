@@ -23,7 +23,7 @@ socket.on('connection', async socket => {
 
   console.log('with user actions')
   socket.on('client:create-account', async (data, cb) => {
-    console.log('create-account action')
+    console.log('create-account action', data)
     cb(
       await User.createAccount(data)
     )
