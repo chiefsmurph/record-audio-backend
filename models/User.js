@@ -11,11 +11,15 @@ const schema = new Schema({
 });
 
 schema.statics.createAccount = async function({ username, password }) {
-  console.log('creating static', username, password)
+  console.log('creating static', username, password);
+  const hash = await bcrypt.hash(password, 10);
+  console.log({ hash });
+  const authToken = generateToken();
+  console.log({ authToken })
   const doc = await this.create({
     username,
-    hash: await bcrypt.hash(password, 10),
-    authTokens: [generateToken()]
+    hash,
+    authTokens: [authToken]
   });
   console.log({
     action: 'User::createAccount',
