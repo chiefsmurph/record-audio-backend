@@ -7,7 +7,6 @@ const path = require('path');
 const getRecentUploads = require('./get-recent-uploads');
 
 const port = 500;
-
 const socket = io(http);
 
 
@@ -16,14 +15,9 @@ const sendRecentUploads = async what =>
   what.emit('server:recent-uploads', await getRecentUploads());
 
 socket.on('connection', async socket => {
-
-  
-
-
   console.log('user connected');
   await sendRecentUploads(socket);
   socket.on('client:request-recent-uploads', () => sendRecentUploads(socket));
-
 });
 
 app.use('/audio', express.static(path.join(__dirname, 'uploads')))
@@ -48,7 +42,6 @@ app.post('/upload', function(req, res) {
     sendRecentUploads(socket);
   });
 });
-
 
 
 http.listen(port, () => {
