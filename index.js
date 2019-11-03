@@ -32,7 +32,7 @@ socket.on('connection', async socket => {
   socket.on('client:login', async (data, cb) => {
     console.log({ data }, 'login')
     cb(
-      await User.login(data)
+      await User.call(User, data)
     )
   });
 
