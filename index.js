@@ -14,7 +14,7 @@ const socket = io(http);
 
 
 const mongoose = require('mongoose');
-const { mongoConnectionString } = require('../config');
+const { mongoConnectionString } = require('./config');
 
 mongoose.connect(mongoConnectionString, { useNewUrlParser: true });
 
