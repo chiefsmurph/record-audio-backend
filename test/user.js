@@ -19,17 +19,17 @@ const fakeCredentials = {
     users: await User.find({})
   });
 
-  const newUser = await User.createAccount(fakeCredentials);
-  strlog({ newUser });
+  // const newUser = await User.createAccount(fakeCredentials);
+  // strlog({ newUser });
 
   const login = await User.login(fakeCredentials);
   strlog({ login})
 
 
-  const wrong = await User.login({
-    ...fakeCredentials,
-    password: 'wrongPassword'
-  });
+  // const wrong = await User.login({
+  //   ...fakeCredentials,
+  //   password: 'wrongPassword'
+  // });
 
-  strlog({ wrong})
+  // strlog({ wrong})
 })();

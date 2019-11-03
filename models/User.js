@@ -39,7 +39,7 @@ schema.statics.createAccount = async function({ username, password }) {
 };
 
 schema.statics.login = async function({ username, password }) {
-  console.log('statics login')
+  console.log('statics login', username, password)
   const foundUser = await this.findOne({ username }, { hash: 1 });
   console.log({ foundUser })
   if (!foundUser) return { success: false };
