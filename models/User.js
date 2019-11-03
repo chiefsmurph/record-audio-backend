@@ -12,6 +12,13 @@ const schema = new Schema({
 
 schema.statics.createAccount = async function({ username, password }) {
   console.log('creating static', username, password);
+  const usernameTaken = await this.findOne({ username });
+  if (usernameTaken) {
+    return {
+      success: false,
+      reason: 'username already taken'
+    };
+  }
   const hash = await bcrypt.hash(password, 10);
   console.log({ hash });
   const authToken = generateToken();
