@@ -34,7 +34,7 @@ schema.statics.createAccount = async function({ username, password }) {
   });
   return {
     success: !!doc,
-    doc
+    authToken
   };
 };
 
@@ -62,14 +62,16 @@ schema.statics.login = async function({ username, password }) {
 };
 
 schema.statics.authToken = async function({ username, authToken }) {
-  const success = await this.find({
+  const foundDoc = await this.findOne({
     username,
     authTokens: authToken
   });
+  const success = !!foundDoc;
   console.log({
     action: 'User::authToken',
     username,
     success,
+    authToken
   });
   return { success };
 };
