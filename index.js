@@ -21,6 +21,7 @@ socket.on('connection', async socket => {
   await sendRecentUploads(socket);
   socket.on('client:request-recent-uploads', () => sendRecentUploads(socket));
 
+  console.log('with user actions')
   socket.on('client:create-account', async (data, cb) => {
     cb(
       await User.createAccount(data)
