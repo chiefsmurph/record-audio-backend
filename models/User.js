@@ -42,9 +42,10 @@ schema.statics.login = async function({ username, password }) {
   const foundUser = await this.findOne({ username }, { hash: 1 });
   if (!foundUser) return { success: false };
   const { hash, _id } = foundUser;
-  // console.log({ response });
+  console.log({ foundUser });
   const success = await bcrypt.compare(password, hash);
   let authToken;
+  console.log({ success })
   if (success) {
     authToken = generateToken();
     await this.update({ _id }, { $push: { authTokens: authToken }});
