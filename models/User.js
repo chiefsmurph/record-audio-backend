@@ -10,17 +10,20 @@ const schema = new Schema({
   authTokens: [String],
 });
 
-schema.statics.authToken = async function({ username, authToken }) {
-  const success = await this.find({
+schema.statics.createAccount = async function({ username, password }) {
+  const doc = await this.create({
     username,
-    authTokens: authToken
+    hash: await bcrypt.hash(password, 10),
+    authTokens: [generateToken()]
   });
   console.log({
-    action: 'User::authToken',
+    action: 'User::createAccount',
     username,
-    success,
   });
-  return { success };
+  return {
+    success: !!doc,
+    doc
+  };
 };
 
 schema.statics.login = async function({ username, password }) {
@@ -43,20 +46,17 @@ schema.statics.login = async function({ username, password }) {
   return { success, authToken };
 };
 
-schema.statics.createAccount = async function({ username, password }) {
-  const doc = await this.create({
+schema.statics.authToken = async function({ username, authToken }) {
+  const success = await this.find({
     username,
-    hash: await bcrypt.hash(password, 10),
-    authTokens: [generateToken()]
+    authTokens: authToken
   });
   console.log({
-    action: 'User::createAccount',
+    action: 'User::authToken',
     username,
+    success,
   });
-  return {
-    success: !!doc,
-    doc
-  };
+  return { success };
 };
 
 const User = mongoose.model('User', schema);

@@ -5,6 +5,8 @@ const io = require('socket.io');
 const path = require('path');
 
 const getRecentUploads = require('./get-recent-uploads');
+const User  = require('./models/User');
+
 
 const port = 500;
 const socket = io(http);
@@ -18,6 +20,25 @@ socket.on('connection', async socket => {
   console.log('user connected');
   await sendRecentUploads(socket);
   socket.on('client:request-recent-uploads', () => sendRecentUploads(socket));
+
+  socket.on('client:create-account', async (data, cb) => {
+    cb(
+      await User.createAccount(data)
+    )
+  });
+
+  socket.on('client:login', async (data, cb) => {
+    cb(
+      await User.login(data)
+    )
+  });
+
+  socket.on('client:auth-token', async (data, cb) => {
+    cb(
+      await User.authToken(data)
+    )
+  });
+  
 });
 
 app.use('/audio', express.static(path.join(__dirname, 'uploads')))
