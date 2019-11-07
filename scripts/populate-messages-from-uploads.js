@@ -1,7 +1,7 @@
 const Message = require('../models/Message');
 const User = require('../models/User');
 const getRecentUploads = require('../actions/get-recent-uploads');
-const User = require()
+
 (async () => {
   const recentUploads = await getRecentUploads();
   console.log({ recentUploads});
