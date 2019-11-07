@@ -6,7 +6,8 @@ const path = require('path');
 
 const getRecentUploads = require('./get-recent-uploads');
 const User  = require('./models/User');
-
+const Message  = require('./models/Message');
+const uploadFileHandler = require('./actions/upload-file-handler');
 
 const port = 500;
 const socket = io(http);
@@ -21,7 +22,7 @@ mongoose.connect(mongoConnectionString, { useNewUrlParser: true });
 
 
 const sendRecentUploads = async what =>
-  what.emit('server:recent-uploads', await getRecentUploads());
+  what.emit('server:recent-uploads', await Message.getMostRecentPublic());
 
 socket.on('connection', async socket => {
   console.log('user connected');
@@ -55,23 +56,9 @@ app.use('/audio', express.static(path.join(__dirname, 'uploads')))
 
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
-app.post('/upload', function(req, res) {
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('No files were uploaded.');
-  }
-
-  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-  let audioFile = req.files.audioFile;
-  console.log('got', audioFile);
-  // Use the mv() method to place the file somewhere on your server
-  audioFile.mv(`./uploads/${audioFile.name}`, err => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send(err);
-    }
-    res.send('File uploaded!');
-    sendRecentUploads(socket);
-  });
+app.post('/upload', uploadFileHandler, () => {
+  console.log('next sendingrecentuploads');
+  sendRecentUploads(socket);
 });
 
 
