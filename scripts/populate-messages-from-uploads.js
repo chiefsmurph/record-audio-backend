@@ -22,3 +22,6 @@ const getRecentUploads = require('../actions/get-recent-uploads');
     });
   }
 })();
+
+
+setTimeout(() => {}, 10000)
