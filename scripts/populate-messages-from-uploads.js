@@ -11,7 +11,7 @@ const getRecentUploads = require('../actions/get-recent-uploads');
     const [username, name] = fileName.split(' - ');
     if (!username || !name) {
       console.log('unable to handle', upload);
-      break;
+      continue;
     }
     
     await Message.create({
