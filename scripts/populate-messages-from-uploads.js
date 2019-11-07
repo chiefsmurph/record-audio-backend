@@ -7,6 +7,7 @@ const getRecentUploads = require('../actions/get-recent-uploads');
   console.log({ recentUploads});
 
   for (let upload of recentUploads) {
+    console.log({ upload })
     const [fileName, fileType] = upload.split('.');
     const [username, name] = fileName.split(' - ');
     if (!username || !name) {
