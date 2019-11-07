@@ -4,7 +4,6 @@ const http = require('http').Server(app)
 const io = require('socket.io');
 const path = require('path');
 
-const getRecentUploads = require('./get-recent-uploads');
 const User  = require('./models/User');
 const Message  = require('./models/Message');
 const uploadFileHandler = require('./actions/upload-file-handler');
