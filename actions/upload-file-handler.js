@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
   }
 
 
-  const { username, authToken, name, fileType } = req.body;
+  const { username, authToken, name, fileType, isPrivate, recipientUser } = req.body;
   const authorized = await User.authToken({
     username,
     authToken
@@ -40,6 +40,8 @@ module.exports = async (req, res, next) => {
     user: await User.findOne({ username }),
     name,
     fileName,
+    isPrivate,
+    recipientUser
   });
 
   console.log({ message })

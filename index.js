@@ -19,34 +19,51 @@ const { mongoConnectionString } = require('./config');
 mongoose.connect(mongoConnectionString, { useNewUrlParser: true });
 
 
+const socketCache = {};
 
-const sendRecentUploads = async what =>
-  what.emit('server:recent-uploads', await Message.getMostRecentPublic());
+const sendRecentUploads = async socket => {
+  const toSend = socket ? [socket] : Object.values(socketCache);
+  for (let socket of toSend) {
+    socket.emit('server:recent-uploads', await Message.getFeed(socket.username));
+  }
+}
 
 socket.on('connection', async socket => {
+
+  const successfulLogin = ({ username }) => {
+    socket.username = username;
+    socketCache[username] = socket;
+  };
+
   console.log('user connected');
   await sendRecentUploads(socket);
   socket.on('client:request-recent-uploads', () => sendRecentUploads(socket));
 
   console.log('with user actions')
   socket.on('client:create-account', async (data, cb) => {
-    console.log('create-account action', data)
-    cb(
-      await User.createAccount(data)
-    )
+    console.log('create-account action', data);
+    const success = await User.createAccount(data);
+    if (success) {
+      successfulLogin(data);
+    }
+    cb(success);
   });
 
   socket.on('client:login', async (data, cb) => {
-    console.log({ data }, 'login')
-    cb(
-      await User.login(data)
-    )
+    console.log({ data }, 'login');
+    const success = await User.login(data);
+    if (success) {
+      successfulLogin(data);
+    }
+    cb(success);
   });
 
   socket.on('client:auth-token', async (data, cb) => {
-    cb(
-      await User.authToken(data)
-    )
+    const success = await User.authToken(data);
+    if (success) {
+      successfulLogin(data);
+    }
+    cb(success);
   });
   
 });
@@ -57,7 +74,7 @@ const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 app.post('/upload', uploadFileHandler, () => {
   console.log('next sendingrecentuploads');
-  sendRecentUploads(socket);
+  sendRecentUploads();
 });
 
 

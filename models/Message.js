@@ -13,13 +13,21 @@ const schema = new Schema({
     type: Boolean,
     default: false
   },
-  privateUser: String
+  recipientUser: String
 });
 
-schema.statics.getMostRecentPublic = async function() {
+schema.statics.getFeed = async function(username) {
   return this
     .find({
-      isPrivate: false
+      $or: [
+        {
+          isPrivate: false
+        },
+        {
+          isPrivate: true,
+          recipientUser: username
+        }
+      ]
     })
     .sort({ _id: -1 })
     .limit(20)
