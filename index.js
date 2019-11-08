@@ -79,9 +79,11 @@ app.use('/audio', express.static(path.join(__dirname, 'uploads')))
 
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
-app.post('/upload', uploadFileHandler, () => {
+app.post('/upload', uploadFileHandler, req => {
   console.log('next sendingrecentuploads');
-  sendRecentUploads();
+  const { recipientUser } = req.body;
+  const sendTo = recipientUser ? socketCache[recipientUser] : undefined;
+  sendRecentUploads(sendTo);
 });
 
 
