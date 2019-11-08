@@ -24,7 +24,11 @@ const socketCache = {};
 const sendRecentUploads = async socket => {
   const toSend = socket ? [socket] : Object.values(socketCache);
   for (let socket of toSend) {
-    socket.emit('server:recent-uploads', await Message.getFeed(socket.username));
+    const { username, emit } = socket;
+    console.log('sending recent uploads', {
+      username
+    });
+    emit('server:recent-uploads', await Message.getFeed(username));
   }
 }
 
@@ -37,7 +41,10 @@ socket.on('connection', async socket => {
 
   console.log('user connected');
   await sendRecentUploads(socket);
-  socket.on('client:request-recent-uploads', () => sendRecentUploads(socket));
+  socket.on('client:request-recent-uploads', () => {
+    console.log('client requested', socket.username)
+    sendRecentUploads(socket);
+  });
 
   console.log('with user actions')
   socket.on('client:create-account', async (data, cb) => {
