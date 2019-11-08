@@ -24,11 +24,11 @@ const socketCache = {};
 const sendRecentUploads = async socket => {
   const toSend = socket ? [socket] : Object.values(socketCache);
   for (let socket of toSend) {
-    const { username, emit } = socket;
+    const { username } = socket;
     console.log('sending recent uploads', {
       username
     });
-    emit('server:recent-uploads', await Message.getFeed(username));
+    socket.emit('server:recent-uploads', await Message.getFeed(username));
   }
 }
 
