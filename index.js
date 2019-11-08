@@ -34,13 +34,13 @@ const sendRecentUploads = async socket => {
 
 socket.on('connection', async socket => {
 
-  const successfulLogin = ({ username }) => {
+  const successfulLogin = async ({ username }) => {
     socket.username = username;
     socketCache[username] = socket;
+    await sendRecentUploads(socket);
   };
 
   console.log('user connected');
-  await sendRecentUploads(socket);
   socket.on('client:request-recent-uploads', () => {
     console.log('client requested', socket.username)
     sendRecentUploads(socket);
