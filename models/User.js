@@ -8,9 +8,14 @@ const schema = new Schema({
   username: String,
   hash: String,
   authTokens: [String],
+
+  age: Number,
+  sex: String,
+  location: String,
+
 });
 
-schema.statics.createAccount = async function({ username, password }) {
+schema.statics.createAccount = async function({ username, password, age, location, sex }) {
   console.log('creating static', username, password);
   const usernameTaken = await this.findOne({ username });
   if (usernameTaken) {
@@ -26,21 +31,33 @@ schema.statics.createAccount = async function({ username, password }) {
   const doc = await this.create({
     username,
     hash,
-    authTokens: [authToken]
+    authTokens: [authToken],
+    age,
+    location,
+    sex
   });
   console.log({
     action: 'User::createAccount',
     username,
+    doc,
+    age,
+    location,
+    sex,
+    doc
   });
   return {
     success: !!doc,
-    authToken
+    authToken,
+    username,
+    age,
+    location,
+    sex,
   };
 };
 
 schema.statics.login = async function({ username, password }) {
   console.log('statics login', username, password)
-  const foundUser = await this.findOne({ username }, { hash: 1 });
+  const foundUser = await this.findOne({ username }).lean();
   console.log({ foundUser })
   if (!foundUser) return { success: false };
   const { hash, _id } = foundUser;
@@ -56,24 +73,26 @@ schema.statics.login = async function({ username, password }) {
     action: 'User::login',
     username,
     success,
-    authToken
+    authToken,
+    ...foundUser,
+    foundUser
   });
-  return { success, authToken };
+  return { success, authToken, ...foundUser };
 };
 
 schema.statics.authToken = async function({ username, authToken }) {
-  const foundDoc = await this.findOne({
+  const foundUser = await this.findOne({
     username,
     authTokens: authToken
-  });
-  const success = !!foundDoc;
+  }).lean();
+  const success = !!foundUser;
   console.log({
     action: 'User::authToken',
     username,
     success,
-    authToken
+    authToken,
   });
-  return { success };
+  return { success, ...foundUser };
 };
 
 const User = mongoose.model('User', schema);

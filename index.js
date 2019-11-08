@@ -35,6 +35,7 @@ const sendRecentUploads = async socket => {
 socket.on('connection', async socket => {
 
   const successfulLogin = async ({ username }) => {
+    console.log('successful login for ', username)
     socket.username = username;
     socketCache[username] = socket;
     await sendRecentUploads(socket);
@@ -49,28 +50,29 @@ socket.on('connection', async socket => {
   console.log('with user actions')
   socket.on('client:create-account', async (data, cb) => {
     console.log('create-account action', data);
-    const success = await User.createAccount(data);
-    if (success) {
-      successfulLogin(data);
+    const response = await User.createAccount(data);
+    console.log({ response });
+    if (response.success) {
+      successfulLogin(response);
     }
-    cb(success);
+    cb(response);
   });
 
   socket.on('client:login', async (data, cb) => {
     console.log({ data }, 'login');
-    const success = await User.login(data);
-    if (success) {
-      successfulLogin(data);
+    const response = await User.login(data);
+    if (response.success) {
+      successfulLogin(response);
     }
-    cb(success);
+    cb(response);
   });
 
   socket.on('client:auth-token', async (data, cb) => {
-    const success = await User.authToken(data);
-    if (success) {
-      successfulLogin(data);
+    const response = await User.authToken(data);
+    if (response.success) {
+      successfulLogin(response);
     }
-    cb(success);
+    cb(response);
   });
   
 });

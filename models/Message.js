@@ -33,6 +33,9 @@ schema.statics.getFeed = async function(username) {
     .limit(20)
     .populate('user', {
       username: 1,
+      age: 1,
+      sex: 1,
+      location: 1,
       _id: 0
     })
     .lean();
