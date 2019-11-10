@@ -34,6 +34,8 @@ const sendRecentUploads = async socket => {
 
 socket.on('connection', async socket => {
 
+  console.log('user connected');
+
   const successfulLogin = async ({ username }) => {
     console.log('successful login for ', username)
     socket.username = username;
@@ -41,13 +43,7 @@ socket.on('connection', async socket => {
     await sendRecentUploads(socket);
   };
 
-  console.log('user connected');
-  socket.on('client:request-recent-uploads', () => {
-    console.log('client requested', socket.username)
-    sendRecentUploads(socket);
-  });
-
-  console.log('with user actions')
+  // AUTH
   socket.on('client:create-account', async (data, cb) => {
     console.log('create-account action', data);
     const response = await User.createAccount(data);
@@ -73,6 +69,26 @@ socket.on('connection', async socket => {
       successfulLogin(response);
     }
     cb(response);
+  });
+
+  socket.on('client:login', async (data, cb) => {
+    console.log({ data }, 'login');
+    const response = await User.login(data);
+    if (response.success) {
+      successfulLogin(response);
+    }
+    cb(response);
+  });
+
+  // GET DATA
+  socket.on('client:request-recent-uploads', () => {
+    console.log('client requested', socket.username)
+    sendRecentUploads(socket);
+  });
+
+  socket.on('client:request-profile', async (username, cb) => {
+    console.log(`${socket.username} requests profile for ${username}`);
+    cb(await User.getProfile(username));
   });
   
 });

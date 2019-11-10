@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 
 const bcrypt = require('bcrypt-promise');
 const generateToken = require('../utils/generate-token');
+const Message = require('./Message');
 
 const schema = new Schema({
   username: String,
@@ -93,6 +94,20 @@ schema.statics.authToken = async function({ username, authToken }) {
     authToken,
   });
   return { success, ...foundUser };
+};
+
+schema.statics.getProfile = async function(username) {
+  const user = await this.findOne({
+    username,
+  }).lean();
+  const publicMessages = await Message.find({
+    isPrivate: false,
+    user: user._id
+  }).sort({ _id: -1 }).lean();
+  return {
+    user,
+    publicMessages
+  };
 };
 
 const User = mongoose.model('User', schema);
