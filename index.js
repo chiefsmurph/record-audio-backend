@@ -21,14 +21,14 @@ mongoose.connect(mongoConnectionString, { useNewUrlParser: true });
 
 const socketCache = {};
 
-const sendRecentUploads = async socket => {
+const sendFeed = async socket => {
   const toSend = socket ? [socket] : Object.values(socketCache);
   for (let socket of toSend) {
     const { username } = socket;
-    console.log('sending recent uploads', {
+    console.log('sending feed', {
       username
     });
-    socket.emit('server:recent-uploads', await Message.getFeed(username));
+    socket.emit('server:feed', await Message.getFeed(username));
   }
 }
 
@@ -40,7 +40,7 @@ socket.on('connection', async socket => {
     console.log('successful login for ', username)
     socket.username = username;
     socketCache[username] = socket;
-    await sendRecentUploads(socket);
+    await sendFeed(socket);
   };
 
   // AUTH
@@ -81,10 +81,10 @@ socket.on('connection', async socket => {
   });
 
   // GET DATA
-  socket.on('client:request-recent-uploads', () => {
-    console.log('client requested', socket.username)
-    sendRecentUploads(socket);
-  });
+  // socket.on('client:request-feed', () => {
+  //   console.log('client requested feed', socket.username)
+  //   sendFeed(socket);
+  // });
 
   socket.on('client:request-profile', async (username, cb) => {
     console.log(`${socket.username} requests profile for ${username}`);
@@ -101,7 +101,7 @@ app.post('/upload', uploadFileHandler, req => {
   console.log('next sendingrecentuploads');
   const { recipientUser } = req.body;
   const sendTo = recipientUser ? socketCache[recipientUser] : undefined;
-  sendRecentUploads(sendTo);
+  sendFeed(sendTo);
 });
 
 

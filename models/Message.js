@@ -17,28 +17,30 @@ const schema = new Schema({
 });
 
 schema.statics.getFeed = async function(username) {
-  return this
-    .find({
-      $or: [
-        {
-          isPrivate: false
-        },
-        {
-          isPrivate: true,
-          recipientUser: username
-        }
-      ]
+
+  const getCondition = condition => 
+    this
+      .find(condition)
+      .sort({ _id: -1 })
+      .limit(20)
+      .populate('user', {
+        username: 1,
+        age: 1,
+        sex: 1,
+        location: 1,
+        _id: 0
+      })
+      .lean();
+  
+  return {
+    public: await getCondition({
+      isPrivate: false
+    }),
+    private: await getCondition({
+      isPrivate: true,
+      recipientUser: username
     })
-    .sort({ _id: -1 })
-    .limit(20)
-    .populate('user', {
-      username: 1,
-      age: 1,
-      sex: 1,
-      location: 1,
-      _id: 0
-    })
-    .lean();
+  };
 };
 
 const Message = mongoose.model('Message', schema);
