@@ -44,6 +44,8 @@ module.exports = async (req, res, next) => {
     recipientUser
   });
 
+  req.body.message = message;
+
   console.log({ message })
 
   audioFile.mv(`./uploads/${fileName}`, err => {

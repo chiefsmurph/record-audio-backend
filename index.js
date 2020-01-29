@@ -21,6 +21,8 @@ mongoose.connect(mongoConnectionString, { useNewUrlParser: true });
 
 const socketCache = {};
 
+const watchingUsers = {};
+
 const sendFeed = async socket => {
   const toSend = socket ? [socket] : Object.values(socketCache);
   for (let socket of toSend) {
@@ -30,7 +32,7 @@ const sendFeed = async socket => {
     });
     socket.emit('server:feed', await Message.getFeed(username));
   }
-}
+};
 
 socket.on('connection', async socket => {
 
@@ -90,6 +92,19 @@ socket.on('connection', async socket => {
     console.log(`${socket.username} requests profile for ${username}`);
     cb(await User.getProfile(username));
   });
+
+  // WATCH USERS
+
+  socket.on('client:watch-user', username => {
+    watchingUsers[username] = [
+      ...watchingUsers[username] || [],
+      socket
+    ];
+  });
+
+  socket.on('client:stop-watching', username => {
+    watchingUsers[username] = watchingUsers[username].filter(s => s !== socket);
+  });
   
 });
 
@@ -99,9 +114,13 @@ const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 app.post('/upload', uploadFileHandler, req => {
   console.log('next sendingrecentuploads');
-  const { recipientUser } = req.body;
+  const { recipientUser, username, message } = req.body;
   const sendTo = recipientUser ? socketCache[recipientUser] : undefined;
+  console.log(JSON.stringify(req.body))
   sendFeed(sendTo);
+  (watchingUsers[username] || []).forEach(socket => {
+    socket && socket.emit('server:new-watch-message', { message });
+  });
 });
 
 
