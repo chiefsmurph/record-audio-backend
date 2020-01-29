@@ -118,9 +118,11 @@ app.post('/upload', uploadFileHandler, req => {
   const sendTo = recipientUser ? socketCache[recipientUser] : undefined;
   console.log(JSON.stringify(req.body))
   sendFeed(sendTo);
-  (watchingUsers[username] || []).forEach(socket => {
-    socket && socket.emit('server:new-watch-message', { message });
-  });
+  if (!message.isPrivate) {
+    (watchingUsers[username] || []).forEach(socket => {
+      socket && socket.emit('server:new-watch-message', { message });
+    });
+  }
 });
 
 
