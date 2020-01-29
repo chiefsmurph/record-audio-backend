@@ -8,7 +8,7 @@ const User  = require('./models/User');
 const Message  = require('./models/Message');
 const uploadFileHandler = require('./actions/upload-file-handler');
 
-const port = 500;
+const port = 3008;
 const socket = io(http);
 
 
