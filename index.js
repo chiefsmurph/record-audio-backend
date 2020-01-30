@@ -26,12 +26,12 @@ let userCount = 0;
 
 const increaseUserCount = () => {
   userCount++;
-  io.emit('server:user-count-change', { userCount });
+  socket.emit('server:user-count-change', { userCount });
 };
 
 const decreaseUserCount = () => {
   userCount--;
-  io.emit('server:user-count-change', { userCount });
+  socket.emit('server:user-count-change', { userCount });
 };
 
 const sendFeed = async socket => {
