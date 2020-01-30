@@ -22,6 +22,17 @@ mongoose.connect(mongoConnectionString, { useNewUrlParser: true });
 const socketCache = {};
 
 const watchingUsers = {};
+let userCount = 0;
+
+const increaseUserCount = () => {
+  userCount++;
+  io.emit('server:user-count-change', { userCount });
+};
+
+const decreaseUserCount = () => {
+  userCount--;
+  io.emit('server:user-count-change', { userCount });
+};
 
 const sendFeed = async socket => {
   const toSend = socket ? [socket] : Object.values(socketCache);
@@ -37,7 +48,7 @@ const sendFeed = async socket => {
 socket.on('connection', async socket => {
 
   console.log('user connected');
-
+  increaseUserCount();
   const successfulLogin = async ({ username }) => {
     console.log('successful login for ', username)
     socket.username = username;
@@ -104,6 +115,10 @@ socket.on('connection', async socket => {
 
   socket.on('client:stop-watching', username => {
     watchingUsers[username] = watchingUsers[username].filter(s => s !== socket);
+  });
+
+  socket.on('disconnect', () => {
+    decreaseUserCount();
   });
   
 });
