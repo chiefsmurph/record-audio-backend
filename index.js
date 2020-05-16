@@ -1,6 +1,13 @@
+const fs = require('fs');
 const express = require('express');
 const app = express();
-const https = require('https').Server(app)
+
+var options = {
+  key: fs.readFileSync('./file.pem'),
+  cert: fs.readFileSync('./file.crt')
+};
+
+const https = require('https').Server(app, options)
 const io = require('socket.io');
 const path = require('path');
 
