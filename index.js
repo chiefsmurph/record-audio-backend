@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const http = require('http').Server(app)
+const https = require('https').Server(app)
 const io = require('socket.io');
 const path = require('path');
 
@@ -9,7 +9,7 @@ const Message  = require('./models/Message');
 const uploadFileHandler = require('./actions/upload-file-handler');
 
 const port = 3008;
-const socket = io(http);
+const socket = io(https);
 
 
 
@@ -141,6 +141,6 @@ app.post('/upload', uploadFileHandler, req => {
 });
 
 
-http.listen(port, () => {
+https.listen(port, () => {
   console.log('connected to port: '+ port)
 });
