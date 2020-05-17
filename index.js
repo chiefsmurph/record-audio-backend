@@ -3,8 +3,9 @@ const express = require('express');
 const app = express();
 
 var options = {
-  key: fs.readFileSync('/etc/ssl/private/nginx-selfsigned.key'),
-  cert: fs.readFileSync('/etc/ssl/certs/nginx-selfsigned.crt')
+  key: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/cert.pem'),
+  ca: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/chain.pem'),
 };
 
 const https = require('https').Server(app, options)
