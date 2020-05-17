@@ -2,22 +2,27 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 
-var options = {
-  key: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/cert.pem'),
-  ca: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/chain.pem'),
-};
 
-const https = require('https').Server(app, options)
-const io = require('socket.io');
+const port = 3008;
+const server = app.listen(port, () => {
+  console.log('connected to port: '+ port)
+});
+
+// var options = {
+//   key: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/privkey.pem'),
+//   cert: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/cert.pem'),
+//   ca: fs.readFileSync('/etc/letsencrypt/live/chiefsmurph.com/chain.pem'),
+// };
+
+// const https = require('http').Server(app)
+const socket = require('socket.io')(server);
 const path = require('path');
 
 const User  = require('./models/User');
 const Message  = require('./models/Message');
 const uploadFileHandler = require('./actions/upload-file-handler');
 
-const port = 3008;
-const socket = io(https);
+// const socket = io(https);
 
 
 
@@ -70,7 +75,7 @@ socket.on('connection', async socket => {
     const response = await User.createAccount(data);
     console.log({ response });
     if (response.success) {
-      successfulLogin(response);
+      successfulLogin(response);``
     }
     cb(response);
   });
@@ -148,7 +153,3 @@ app.post('/upload', uploadFileHandler, req => {
   }
 });
 
-
-https.listen(port, () => {
-  console.log('connected to port: '+ port)
-});
